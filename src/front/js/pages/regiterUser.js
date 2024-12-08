@@ -35,19 +35,20 @@ export const RegisterUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Evita que el formulario se recargue
     if (checkTerms) {
-      const response = await actions.signupUser(
-        userData.name, userData.last_name, userData.email, userData.password
-      );
-      if (!response.error) {
-        // Redirigir al usuario a la página de inicio o login
-        navigate("/loginuser"); // Por ejemplo, redirigir a la página de login
-      } else {
-        setError(response.msg); // Mostrar el mensaje de error si ocurre
-      }
+        const response = await actions.signupUser(
+            userData.name, userData.last_name, userData.email, userData.password
+        );
+        if (!response.error) {
+            // Redirigir al usuario a la página de inicio o login
+            navigate("/loginuser"); // Por ejemplo, redirigir a la página de login
+        } else {
+            console.error("Error en la respuesta del registro:", response); // Agregar log para depuración
+            setError(response.msg); // Mostrar el mensaje de error si ocurre
+        }
     } else {
-      setError("Debes aceptar los Términos y Condiciones.");
+        setError("Debes aceptar los Términos y Condiciones.");
     }
-  };
+};
   return (
     <div className="form-container">
       <form className="form mt-4" onSubmit={handleSubmit}>
