@@ -34,10 +34,16 @@ export const Navbar = () => {
             </div>
           </Link>
           <div className="ml-auto">
-            {store.token ? ( // Si hay token, mostrar "Cerrar Sesión"
+            <Link to="/loginuser">
+              <button className="btn btn-light" style={{ fontWeight: "bold" }}>
+                Iniciar Sesión
+              </button>
+            </Link>
+
+            {/* {store.token ? ( // Si hay token, mostrar "Cerrar Sesión"
               <button
                 className="btn btn-outline-danger ml-2"
-                onClick={()=>handleLogOut()}
+                onClick={handleLogOut}
               >
                 Cerrar Sesión
               </button>
@@ -47,7 +53,7 @@ export const Navbar = () => {
                   Iniciar Sesión
                 </button>
               </Link>
-            )}
+            )} */}
           </div>
         </nav>
       </div>

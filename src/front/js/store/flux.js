@@ -4,12 +4,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 	const storedUser = localStorage.getItem("currentUser")
 	return {
 		store: {
-
+			pendingPlans: [],
 			user: null,
-			currentUser: storedUser ? JSON.parse(storedUser) : null,
+			token: localStorage.getItem("token") ?? null,
+			currentUser: JSON.parse(localStorage.getItem("currentUser")) ?? null,
 			users: [],
-			plans: [], 
-			itemType: null
+			plans: [],
+			itemType: null,
 
 		},
 		actions: {
@@ -51,9 +52,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 							"Content-Type": "application/json",
 							"Authorization": `Bearer ${localStorage.getItem("token")}`
 						},
-						body: JSON.stringify({ 
-							email, 
-							password, 
+						body: JSON.stringify({
+							email,
+							password,
 						}),
 					});
 
@@ -78,7 +79,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			logoutUser: async () => {
 				const store = getStore();
-				
+
 				try {
 					// Llamada a la API para cerrar sesión
 					const response = await fetch(backendURL + "/logout", {
@@ -88,7 +89,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 							Authorization: `Bearer ${store.token}` // Pasar el token del usuario
 						}
 					});
-			
+
 					if (response.ok) {
 						const data = await response.json();
 						console.log(data.msg); // Mensaje de confirmación
@@ -113,7 +114,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						},
 						body: JSON.stringify({ email }),
 					});
-			
+
 					// Si la respuesta es exitosa
 					if (response.ok) {
 						const data = await response.json();
@@ -130,50 +131,50 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error("Error en la solicitud de recuperación de contraseña:", error);
 					return { success: false, msg: "Hubo un error al procesar tu solicitud. Intenta nuevamente." }; // Mensaje genérico de error
 				}
-			},		
-			
+			},
+
 			changePassword: async (newPassword, token) => {
 				try {
-					const response = await fetch(backendURL+ "/changepassword", {
+					const response = await fetch(backendURL + "/changepassword", {
 						method: "PATCH",
 						headers: {
 							"Content-Type": "application/json",
-							"Authorization": `Bearer ${token}`, 
-							
+							"Authorization": `Bearer ${token}`,
+
 						},
 						body: JSON.stringify({ "new_password": newPassword }),
 					});
-			
+
 					const data = await response.json();
-			
+
 					if (!response.ok) {
 						throw new Error(data.msg || "Error al cambiar la contraseña");
 					}
-			
+
 					return { success: true, msg: data.msg };
 				} catch (error) {
 					console.error("Error en changePassword:", error)
 					return { success: false, msg: error.message };
 				}
 			},
-			
 
-			updateUser: async (user_id, name, last_name, email, password, profile_image) => {
+
+			updateUser: async (user_id, name, last_name, email, token) => {
 				try {
+					console.log("Datos a enviar:", { user_id, name, last_name, email });
 					const response = await fetch(`${backendURL}/update_user/${user_id}`, {
 						method: "PUT",
 						headers: {
 							"Content-Type": "application/json",
+							"Authorization": `Bearer ${token}`,
 						},
 						body: JSON.stringify({
 							name: name,
 							last_name: last_name,
 							email: email,
-							password: password,
-							profile_image: profile_image,
 						}),
 					});
-			
+
 					if (response.ok) {
 						const data = await response.json();
 						console.log("Usuario actualizado:", data.user);
@@ -185,7 +186,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 				} catch (error) {
 					console.error("Error en la actualización:", error);
-					return { error: true, msg: "Error en la solicitud" }; 
+					return { error: true, msg: "Error en la solicitud" };
 				}
 			},
 
@@ -241,7 +242,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						}
 					});
 					if (!response.ok) {
-						throw new Error ('Error al obtener el correo electrónico del usuario');
+						throw new Error('Error al obtener el correo electrónico del usuario');
 					}
 					const data = await response.json();
 					return data.user_email;
@@ -253,7 +254,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			managePlan: async (planId, action) => {
 				try {
-					console.log({planId, action})
+					console.log({ planId, action })
 					const bodyRequest = { "action": action }
 					const headers = {
 						"Content-Type": "application/json",
@@ -294,6 +295,42 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			submitTrip: async (formData, token) => {
+				try {
+				  const response = await fetch("https://glowing-fiesta-jj4gv9j44xg6hpv5p-3001.app.github.dev/api/create_plan", {
+					method: "POST",
+					headers: {
+					  "Content-Type": "application/json", // Especificamos que estamos enviando JSON
+					  "Authorization": `Bearer ${token}`, // Agregamos el token de autenticación
+					},
+					body: JSON.stringify({
+					  name: formData.name,
+					  caption: formData.caption,
+					  image: formData.image,
+					  type: formData.type,
+					  available_slots: formData.available_slots,
+					}), // Enviamos los datos del formulario como JSON
+				  });
+			  
+				  if (response.ok) {
+					const result = await response.json();
+					alert(result.msg); // Muestra el mensaje del backend
+					const store = getStore();
+					setStore({
+					  pendingPlans: [
+						...store.pendingPlans,
+						{ ...formData, status: "Pending" }, // Guarda el nuevo plan en el estado
+					  ],
+					});
+				  } else {
+					const error = await response.json();
+					alert("Error al registrar el plan: " + error.msg);
+				  }
+				} catch (error) {
+				  console.error("Error de conexión:", error);
+				}
+			  },
+			  
 			deletePlan: async (id, type) => {
 				let resp = await fetch(`${backendURL}/delete_plan/${id}`, {
 					method: "DELETE",

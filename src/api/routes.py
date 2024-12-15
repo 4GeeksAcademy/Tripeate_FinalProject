@@ -322,17 +322,16 @@ def delete_plan(plan_id):
     current_user = User.query.get(current_user_id)
     # verifica si el usuario es admin o dueño del plan 
     
-    if current_user.is_admin:
-        # plan = Plan.query.filter_by(id=plan_id, user_id=current_user_id).first():
-        plan = Plan.query.get(plan_id)
-        if plan:
-            db.session.delete(plan)
-            db.session.commit()
-            return jsonify({"msg": "Plan eliminado exitosamente"})
-        else:
-            return jsonify({"error": "Plan no encontrado"})
+    plan = Plan.query.get(plan_id)
+    if not plan:
+        return jsonify({"error": "Plan no encontrado"}), 404 
+    is_owner =  plan.user_id == int(current_user_id)
+    if current_user.is_admin or is_owner:
+        db.session.delete(plan)
+        db.session.commit()
+        return jsonify({"msg": "Plan eliminado exitosamente"})
     else:
-        return jsonify({"error": "No autorizado"})
+        return jsonify({"error": "No autorizado"}), print(f"User ID del plan: {plan.user_id}, User ID actual: {current_user_id}")
 
 
 

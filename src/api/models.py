@@ -4,11 +4,7 @@ from enum import Enum
 
 db = SQLAlchemy()
 
-# Tabla de asociación para la relación muchos a muchos entre usuarios y roles
-user_roles = db.Table('user_roles',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
-    db.Column('role_id', db.Integer, db.ForeignKey('roles.id'), primary_key=True)
-)
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -20,7 +16,6 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), default=True)
     is_admin = db.Column(db.Boolean(), default=False)
     profile_image = db.Column(db.String(255), nullable=True)
-    roles = db.relationship('Role', secondary=user_roles, backref=db.backref('users', lazy='dynamic'))
     plans = db.relationship('Plan', backref='user', lazy=True)
 
     def __repr__(self):
@@ -34,7 +29,6 @@ class User(db.Model):
             "email": self.email,
             "is_admin": self.is_admin,
             "profile_image": self.profile_image,
-            "roles": [role.name for role in self.roles],
             "plans": [{"id": plan.id, "name": plan.name}  for plan in self.plans]
         }
     # El usuario puede crear un plan
@@ -55,15 +49,15 @@ class User(db.Model):
                     plan.status = PlanStatus.Rejected
                 db.session.commit()
 
-    # El usuario admin puede eliminar planes
+    # El usuario admin o dueño del plan puede eliminar planes
     def delete_plan(self, plan_id):
-        if self.is_admin:
-            plan_to_delete = Plan.query.get(plan_id)
-            if plan_to_delete:
+        plan_to_delete = Plan.query.get(plan_id)
+        if not plan_to_delete:
+            return False, "Plan no encontrado."
+        if self.is_admin or plan_to_delete.user_id == self.id:
                 db.session.delete(plan_to_delete)
                 db.session.commit()
                 return True, "Plan eliminado exitosamente."
-            return False, "Plan no encontrado."
         return False, "No tienes permiso para eliminar planes."
 
     # El usuario puede comprar un plan
@@ -82,13 +76,7 @@ class User(db.Model):
                 db.session.delete(user_to_delete)
                 db.session.commit()
 
-class Role(db.Model):
-    __tablename__ = 'roles'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
 
-    def __repr__(self):
-        return f'<Role {self.name}>'
 
 # Tabla de asociación para la relación muchos a muchos entre planes y categorías
 planes_categorias = db.Table('planes_categorias',
@@ -118,10 +106,11 @@ class Plan(db.Model):
     caption = db.Column(db.String(1000))
     image = db.Column(db.String(250))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    type = db.Column(db.Enum(PlanType), nullable=False)  # Agregar tipo de plan
+    # type = db.Column(db.Enum(PlanType), nullable=False)  # Agregar tipo de plan
+    categories_id= db.Column(db.Integer, db.ForeignKey("categories.id"))
     available_slots = db.Column(db.Integer, nullable=False) #Agregar cantidad de cupos disponibles
     status = db.Column(db.Enum(PlanStatus), default=PlanStatus.Pending) #Estado del plan
-    categories = db.relationship('Category', secondary=planes_categorias, backref='plans')
+    categories = db.relationship('Category', backref='plans')
 
     def __repr__(self):
         return f'<Plan {self.name}>'
