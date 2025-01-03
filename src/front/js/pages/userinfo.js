@@ -85,7 +85,7 @@ export const PerfilUser = () => {
     formData.append("imageDestino", trip.imageDestino)
     formData.append("precioTrip", trip.precioTrip)
 
-
+    console.log("Datos del trip a enviar:", trip);
     const response = await actions.registerTrip(formData)
 
 
@@ -135,6 +135,18 @@ export const PerfilUser = () => {
         userData.last_name,
         userData.email,
         token);
+      actions.setCurrentUser({
+        ...store.currentUser,
+        name: userData.name,
+        last_name: userData.last_name,
+        email: userData.email
+      });
+      localStorage.setItem("currentUser", JSON.stringify({
+        ...store.currentUser,
+            name: userData.name,
+            last_name: userData.last_name,
+            email: userData.email
+      }));
       setUserData({
         name: userData.name,
         last_name: userData.last_name,

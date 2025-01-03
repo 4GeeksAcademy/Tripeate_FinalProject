@@ -7,6 +7,7 @@ import { Context } from "../store/appContext";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Modal } from "./modal";
 import ErrorModal from "./modalError";
+import Swal from 'sweetalert2'
 
 
 export const PerfilAdmin = () => {
@@ -21,7 +22,7 @@ export const PerfilAdmin = () => {
   const [userEmails, setUserEmails] = useState([]);
   const [collapsed, setCollapsed] = useState(false);
   const [activeSection, setActiveSection] = useState('users');
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(true);
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState({
@@ -36,29 +37,48 @@ export const PerfilAdmin = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Datos a enviar:", userData);
-    const token = localStorage.getItem("token");
-    try {
-      await actions.updateUser(store.currentUser.id,
-        userData.name,
-        userData.last_name,
-        userData.email,
-        token);
-      setUserData({
-        name: userData.name,
-        last_name: userData.last_name,
-        email: userData.email
-      });
-      alert("Información actualizada con éxito");
-    } catch (error) {
-      console.error("Error al actualizar:", error);
-      alert("Error al actualizar la información");
-    }
-  };
+      e.preventDefault();
+      const token = localStorage.getItem("token");
+      try {
+        await actions.updateUser(store.currentUser.id,
+          userData.name,
+          userData.last_name,
+          userData.email,
+          token);
+        actions.setCurrentUser({
+          ...store.currentUser,
+          name: userData.name,
+          last_name: userData.last_name,
+          email: userData.email
+        });
+        localStorage.setItem("currentUser", JSON.stringify({
+          ...store.currentUser,
+              name: userData.name,
+              last_name: userData.last_name,
+              email: userData.email
+        }));
+        setUserData({
+          name: userData.name,
+          last_name: userData.last_name,
+          email: userData.email
+        });
+        Swal.fire({
+          title: "Información actualizada con éxito",
+          icon: "success",
+          draggable: true
+        });
+      } catch (error) {
+        console.error("Error al actualizar:", error);
+        Swal.fire({
+          title: "Error al actualizar la información",
+          icon: "error",
+          draggable: true
+        });
+      }
+    };
 
   const toggleForm = () => {
-    setShowForm(!showForm);
+    setShowForm(showForm);
   };
 
   useEffect(() => {
@@ -205,7 +225,7 @@ export const PerfilAdmin = () => {
           <div>
             <ul className="navbar-nav flex-column ">
               <li className="nav-item">
-                <button className=" btn text-end navbutton" onClick={toggleForm} href="#"><p><strong>Mi Perfil</strong></p></button>
+                <button className=" btn text-end navbutton" onClick={() => {setActiveSection('perfil'); toggleForm()}}><p><strong>Mi Perfil</strong></p></button>
               </li>
               <li className="nav-item">
               </li>
@@ -253,7 +273,7 @@ export const PerfilAdmin = () => {
           />
         )}
 
-        {activeSection === 'users' && !showForm && (
+        {activeSection === 'users' && (
           <>
             {/* Sección de Usuarios */}
             <h3>Usuarios registrados en la plataforma</h3>
@@ -293,7 +313,7 @@ export const PerfilAdmin = () => {
           </>
         )}
 
-        {activeSection === 'accepted' && !showForm && (
+        {activeSection === 'accepted' && (
           <>
             {/* Sección de Planes */}
             {/* Sección de Planes Aceptados */}
@@ -336,7 +356,7 @@ export const PerfilAdmin = () => {
           </>
         )}
 
-        {activeSection === 'rejected' && !showForm && (
+        {activeSection === 'rejected' && (
           <>
             {/* Sección de Planes Rechazados */}
             <h3>Planes Rechazados</h3>
@@ -378,7 +398,7 @@ export const PerfilAdmin = () => {
           </>
         )}
 
-        {activeSection === 'pending' && !showForm && (
+        {activeSection === 'pending' && (
           <>
             {/* Sección de Planes Pendientes */}
             <h3>Planes Pendientes</h3>
@@ -431,7 +451,7 @@ export const PerfilAdmin = () => {
             )}
           </>
         )}
-        {showForm && (
+        {activeSection === 'perfil' && showForm && (
           <div className="container mt-5 p-4" style={{ backgroundColor: "white", maxWidth: "800px", borderRadius: "10px" }}>
             <form onSubmit={handleSubmit}>
               <div className="pt-2">

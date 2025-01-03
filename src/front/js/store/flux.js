@@ -193,6 +193,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			setCurrentUser: (newUserData) => {
+                const store = getStore();
+                setStore({ currentUser: { ...store.currentUser, ...newUserData } });
+            },
+
 			getUsersList: async () => {
 				let resp = await fetch(backendURL + "/users", {
 					method: "GET",
@@ -208,7 +213,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			createPlan: async (name, caption, image, available_slots, token) => {
+			createPlan: async (name, caption, image, available_slots) => {
+				const token = localStorage.getItem("token");
 				try {
 					const response = await fetch(`${backendURL}/create_plan`, {
 						method: "POST",
@@ -445,13 +451,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 			registerTrip: async (tripPlan) => {
+
+				
 				try {
+					const store = getStore()
 					const response = await fetch(`${process.env.BACKEND_URL}/create-plan`, {
 						method: "POST",
 						headers: {
-							"Content-Type": "application/json"
+							"Authorization": `Bearer ${store.token}`
 						},
-						body: JSON.stringify(tripPlan)
+						body: tripPlan
 					})
 
 					if (response.ok) {
