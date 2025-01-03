@@ -193,6 +193,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			setCurrentUser: (newUserData) => {
+                const store = getStore();
+                setStore({ currentUser: { ...store.currentUser, ...newUserData } });
+            },
+
 			getUsersList: async () => {
 				let resp = await fetch(backendURL + "/users", {
 					method: "GET",
