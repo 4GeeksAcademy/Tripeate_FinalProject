@@ -32,16 +32,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if (response.ok) {
 						const data = await response.json();
-						console.log("Usuario registrado:", data.user);
-						return data; // Devuelve los datos si el registro fue exitoso
+						console.log("Usuario registrado:")
+						return data;
 					} else {
 						const errorData = await response.json();
 						console.error("Error en el registro:", errorData.msg);
-						return { error: true, msg: errorData.msg }; // Devuelve un mensaje de error si falló
+						return { error: true, msg: errorData.msg }; 
 					}
 				} catch (error) {
 					console.error("Error en el registro:", error);
-					return { error: true, msg: "Error en la solicitud" }; // Indica un error de red u otro tipo de error
+					return { error: true, msg: "Error en la solicitud" }; 
 				}
 			},
 
@@ -61,43 +61,38 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if (response.ok) {
 						const data = await response.json();
-						console.log("Inicio de sesión exitoso:", data);
-						console.log({ "Email del usuario": data.user.email });
+						console.log("Inicio de sesión exitoso");
 						setStore({ currentUser: data.user, token: data.token })
 						localStorage.setItem("currentUser", JSON.stringify(data.user));
-						// Devuelve los datos recibidos, como el token y el ID de usuario
 						return { success: true, token: data.token, userId: data.Id, is_admin: data.is_admin };
 					} else {
 						const errorData = await response.json();
 						console.error("Error en el inicio de sesión:", errorData.msg);
-						return { error: true, msg: errorData.msg }; // Retorna el mensaje de error si el login falla
+						return { error: true, msg: errorData.msg }; 
 					}
 				} catch (error) {
 					console.error("Error en la solicitud de inicio de sesión:", error);
-					return { error: true, msg: "Error en la solicitud" }; // Indica un error de red u otro tipo de error
+					return { error: true, msg: "Error en la solicitud" };
 				}
 			},
 
 			logoutUser: async () => {
 				const store = getStore();
-
 				try {
-					// Llamada a la API para cerrar sesión
 					const response = await fetch(backendURL + "/logout", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json",
-							Authorization: `Bearer ${store.token}` // Pasar el token del usuario
+							Authorization: `Bearer ${store.token}` 
 						}
 					});
 
 					if (response.ok) {
 						const data = await response.json();
-						console.log(data.msg); // Mensaje de confirmación
-						setStore({ token: null, user: null }); // Eliminar token y usuario del estado
+						setStore({ token: null, user: null }); 
 						localStorage.removeItem('currentUser')
 						localStorage.removeItem('token')
-						return true; // Éxito
+						return true; 
 					} else {
 						console.error("Error al cerrar sesión", error);
 						return false;
@@ -109,7 +104,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			requestPasswordRecovery: async (email) => {
 				try {
-					// Realizamos una solicitud POST al servidor para iniciar el proceso de recuperación de la contraseña
 					const response = await fetch(backendURL + "/requestpasswordrecovery", {
 						method: "POST",
 						headers: {
@@ -117,22 +111,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 						},
 						body: JSON.stringify({ email }),
 					});
-
-					// Si la respuesta es exitosa
 					if (response.ok) {
 						const data = await response.json();
-						console.log("Solicitud de recuperación de contraseña enviada:", data);
-						return { success: true };  // Retornamos éxito si la respuesta es positiva
+						console.log("Solicitud de recuperación de contraseña enviada");
+						return { success: true };
 					} else {
-						// Si hay un error, obtenemos el mensaje de error del servidor
 						const errorData = await response.json();
 						console.error("Error en la solicitud de recuperación de contraseña:", errorData.msg);
-						return { success: false, msg: errorData.msg };  // Devolvemos el mensaje de error
+						return { success: false, msg: errorData.msg };  
 					}
 				} catch (error) {
-					// Si ocurre un error en la red o un problema de servidor
 					console.error("Error en la solicitud de recuperación de contraseña:", error);
-					return { success: false, msg: "Hubo un error al procesar tu solicitud. Intenta nuevamente." }; // Mensaje genérico de error
+					return { success: false, msg: "Hubo un error al procesar tu solicitud. Intenta nuevamente." };
 				}
 			},
 
@@ -164,7 +154,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			updateUser: async (user_id, name, last_name, email, token) => {
 				try {
-					console.log("Datos a enviar:", { user_id, name, last_name, email });
 					const response = await fetch(`${backendURL}/update_user/${user_id}`, {
 						method: "PUT",
 						headers: {
@@ -180,7 +169,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if (response.ok) {
 						const data = await response.json();
-						console.log("Usuario actualizado:", data.user);
 						return data;
 					} else {
 						const errorData = await response.json();
@@ -209,7 +197,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 				if (resp.ok) {
 					let dataUsers = await resp.json();
 					setStore({ users: dataUsers.users })
-					console.log({ dataUsers })
 				}
 			},
 
@@ -232,16 +219,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if (response.ok) {
 						const data = await response.json();
-						console.log("Plan creado:", data);
+						console.log("Plan creado");
 						return data; // Devuelve los datos si la creación fue exitosa
 					} else {
 						const errorData = await response.json();
 						console.error("Error al crear el plan:", errorData.msg);
-						return { error: true, msg: errorData.msg }; // Devuelve un mensaje de error si falló
+						return { error: true, msg: errorData.msg };
 					}
 				} catch (error) {
 					console.error("Error en la creación del plan:", error);
-					return { error: true, msg: "Error en la solicitud" }; // Indica un error de red u otro tipo de error
+					return { error: true, msg: "Error en la solicitud" };
 				}
 			},
 
@@ -250,8 +237,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					let resp = await fetch(backendURL + "/plans", {
 						method: "GET",
 						headers: {
-							"Content-Type": "application/json",
-							// "Authorization": `Bearer ${localStorage.getItem("token")}`
+							"Content-Type": "application/json"
 						}
 					});
 					if (resp.ok) {
@@ -261,7 +247,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return dataPlans.plans
 
 					} else {
-						// Manejo de errores si la respuesta no es exitosa
 						const errorData = await resp.json();
 						console.error("Error al obtener planes:", errorData);
 						setStore({ plans: [] });
@@ -283,7 +268,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 					});
 					if (response.ok) {
 						const data = await response.json();
-						console.log(data)
 						return data.plan;
 					} else {
 						const errorData = await response.json();
@@ -319,13 +303,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			managePlan: async (planId, action) => {
 				try {
-					console.log({ planId, action })
 					const bodyRequest = { "action": action }
 					const headers = {
 						"Content-Type": "application/json",
 						"Authorization": `Bearer ${localStorage.getItem("token")}`
 					}
-					console.log(headers)
 					let resp = await fetch(`${backendURL}/manage_plan/${planId}`, {
 						method: "POST",
 						body: JSON.stringify(bodyRequest),
@@ -390,7 +372,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 					if (response.ok) {
 						const data = await response.json();
-						console.log("Planes favoritos:", data.favorites);
 						return data.favorites;
 					} else {
 						const errorData = await response.json();
@@ -407,7 +388,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const token = localStorage.getItem("token");
 				try {
 					const response = await fetch(`${backendURL}/favorites/${planId}`, {
-						method: "POST", // Cambiar a POST para agregar un favorito
+						method: "POST", 
 						headers: {
 							"Content-Type": "application/json",
 							"Authorization": `Bearer ${token}`
@@ -442,11 +423,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 						console.log("Favorito eliminado exitosamente");
 					} else {
 						const errorData = await response.json();
-						console.error("Error al eliminar favorito:", errorData.msg);
 						alert("Error al eliminar favorito");
 					}
 				} catch (error) {
-					console.error("Error en la solicitud:", error);
 					alert("Error en la solicitud");
 				}
 			},
