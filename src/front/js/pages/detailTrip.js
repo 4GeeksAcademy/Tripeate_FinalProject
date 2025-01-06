@@ -15,7 +15,6 @@ export const DetailTrip = () => {
         if (planId) {
             const fetchPlan = async () => {
                 const response = await actions.getPlan(planId);
-                console.log("Respuesta del plan:", response)
                 if (response) {
                     setPlan(response);
                 }

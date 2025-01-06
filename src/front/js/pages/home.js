@@ -26,7 +26,6 @@ export const Home = () => {
 				try {
 					const favorites = await actions.getFavorites();
 					setFavoritePlans(favorites);
-					console.log("Estos son los planes favoritos:", favorites);
 				} catch (error) {
 					console.error("Error al obtener favoritos:", error);
 				}

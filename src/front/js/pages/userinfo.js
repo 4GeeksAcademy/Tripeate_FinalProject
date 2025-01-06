@@ -85,7 +85,6 @@ export const PerfilUser = () => {
     formData.append("imageDestino", trip.imageDestino)
     formData.append("precioTrip", trip.precioTrip)
 
-    console.log("Datos del trip a enviar:", trip);
     const response = await actions.registerTrip(formData)
 
 
@@ -96,8 +95,6 @@ export const PerfilUser = () => {
         icon: "success"
       });
       setTrip(initialTripState)
-
-
     } else {
       alert("error")
     }
@@ -127,7 +124,6 @@ export const PerfilUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Datos a enviar:", userData);
     const token = localStorage.getItem("token");
     try {
       await actions.updateUser(store.currentUser.id,
@@ -480,8 +476,6 @@ export const PerfilUser = () => {
                         ...trip, imageDestino: event.target.files[0]
                       })
                     }}
-                  //revisar imagen
-                  // multiple
                   />
                 </div>
               </div>
@@ -672,186 +666,6 @@ export const PerfilUser = () => {
                   />
                 </div>
               </div>
-
-              {/* <h2 className="mt-4 mb-3">Paquetes</h2>
-                <div
-                  className="row"
-                  style={{
-                    display: "flex",
-                    gap: "20px",
-                    justifyContent: "center",
-                    marginBottom: "2rem",
-                  }}
-                > */}
-              {/* <div className="col" style={{ flex: "1", maxWidth: "300px" }}>
-                    <div
-                      className="card"
-                      style={{ height: "100%", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}
-                    >
-                      <div className="card-body">
-                        <h5
-                          className="card-title"
-                          style={{
-                            color: "#a44a3f",
-                            fontWeight: "bold",
-                            marginBottom: "1rem",
-                          }}
-                        >
-                          Paquete Básico
-                        </h5>
-                        <ul className="list-unstyled" style={{ marginBottom: "1rem" }}>
-                          <li>Transporte</li>
-                          <li>Agua potable</li>
-                        </ul>
-                        <div
-                          style={{
-                            fontSize: "1.25rem",
-                            color: "#a44a3f",
-                            textAlign: "center",
-                            padding: "0.5rem",
-                            borderRadius: "4px",
-                            backgroundColor: "#f8f9fa",
-                            margin: "1rem 0",
-                          }}
-                        >
-                          <strong>$40.00</strong>
-                        </div>
-                        <div className="form-check" style={{ marginTop: "1rem" }}>
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="paqueteSeleccionado"
-                            value="basico"
-                            id="paqueteBasico"
-
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="paqueteBasico"
-                            style={{ cursor: "pointer" }}
-                          >
-                            Seleccionar paquete básico
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col" style={{ flex: "1", maxWidth: "300px" }}>
-                    <div
-                      className="card"
-                      style={{ height: "100%", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}
-                    >
-                      <div className="card-body">
-                        <h5
-                          className="card-title"
-                          style={{
-                            color: "#a44a3f",
-                            fontWeight: "bold",
-                            marginBottom: "1rem",
-                          }}
-                        >
-                          Paquete Medio
-                        </h5>
-                        <ul className="list-unstyled" style={{ marginBottom: "1rem" }}>
-                          <li>Transporte</li>
-                          <li>Desayuno</li>
-                          <li>Agua potable</li>
-                          <li>Refrigerios</li>
-                          <li>Bebidas (6)</li>
-                        </ul>
-                        <div
-                          style={{
-                            fontSize: "1.25rem",
-                            color: "#a44a3f",
-                            textAlign: "center",
-                            padding: "0.5rem",
-                            borderRadius: "4px",
-                            backgroundColor: "#f8f9fa",
-                            margin: "1rem 0",
-                          }}
-                        >
-                          <strong>$70.00</strong>
-                        </div>
-                        <div className="form-check" style={{ marginTop: "1rem" }}>
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="paqueteSeleccionado"
-                            value="medio"
-                            id="paqueteMedio"
-
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="paqueteMedio"
-                            style={{ cursor: "pointer" }}
-                          >
-                            Seleccionar paquete medio
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col" style={{ flex: "1", maxWidth: "300px" }}>
-                    <div
-                      className="card"
-                      style={{ height: "100%", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}
-                    >
-                      <div className="card-body">
-                        <h5
-                          className="card-title"
-                          style={{
-                            color: "#a44a3f",
-                            fontWeight: "bold",
-                            marginBottom: "1rem",
-                          }}
-                        >
-                          Paquete Full
-                        </h5>
-                        <ul className="list-unstyled" style={{ marginBottom: "1rem" }}>
-                          <li>Transporte</li>
-                          <li>Desayuno</li>
-                          <li>Agua potable</li>
-                          <li>Refrigerios</li>
-                          <li>Bebidas ilimitadas</li>
-                          <li>Almuerzo</li>
-                          <li>Masaje</li>
-                        </ul>
-                        <div
-                          style={{
-                            fontSize: "1.25rem",
-                            color: "#a44a3f",
-                            textAlign: "center",
-                            padding: "0.5rem",
-                            borderRadius: "4px",
-                            backgroundColor: "#f8f9fa",
-                            margin: "1rem 0",
-                          }}
-                        >
-                          <strong>$120.00</strong>
-                        </div>
-                        <div className="form-check" style={{ marginTop: "1rem" }}>
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="paqueteSeleccionado"
-                            value="full"
-                            id="paqueteFull"
-
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="paqueteFull"
-                            style={{ cursor: "pointer" }}
-                          >
-                            Seleccionar paquete full
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
-
               <button
                 type="submit"
                 className="btn btn-primary w-100"
